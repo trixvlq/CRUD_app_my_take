@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load page_filter %}
+{% block content %}
+<div class="col">
+    <div class="container py-5">
+        <div class="row d-flex justify-content-center align-items-center">
+            <div class="col">
+                <div class="card">
+                    <div class="rounded-top text-white d-flex flex-row" style="background-color: #000; height:400px;">
+                        <div style="width: 400px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-left:15px;">
+                            <img src="{{ user.pfp.url }}" alt="Profile Picture" class="img-fluid img-thumbnail "
+                                 style="width: 100%; height: 100%; object-fit: cover; margin:25px;">
+                        </div>
+                        <div class="ms-3 d-flex flex-column justify-content-between" style='margin:15px;'>
+                            <div>
+                                <h5 class="mb-0">{{ user.first_name }} {{ user.last_name }}</h5>
+                                <p class="text-white mb-2">{{ user.nickname }}</p>
+                            </div>
+                            <div class="d-flex justify-content-between text-center">
+                                <div class="text-white">
+                                    <p class="mb-0 h5">253</p>
+                                    <p class="small text-white mb-0">posts</p>
+                                </div>
+                                <div class="px-3 text-white">
+                                    <p class="mb-0 h5">1026</p>
+                                    <p class="small text-white mb-0">Followers</p>
+                                </div>
+                                <div class="text-white">
+                                    <p class="mb-0 h5">478</p>
+                                    <p class="small text-white mb-0">Following</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4 text-black">
+                        <div class="mb-4">
+                            <p class="lead mb-0">About</p>
+                            <div class="p-3" style="background-color: #f8f9fa;">
+                                <p class="font-italic mb-0">{{ user.bio }}</p>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <p class="lead mb-0">Recent posts</p>
+                            <p class="mb-0"><a href="#!" class="text-muted">Show all</a></p>
+                        </div>
+                    </div>
+                    {% for post in posts %}
+                    <div class="card mb-3">
+                        <img src="{{ post.image.url }}" class="card-img-top" alt="..." style='width:50%;height:50vh;'>
+                        <div class="card-body">
+                            <h5 class="card-title">{{post.title}}</h5>
+                            <p class="card-text">{{ post.content }}</p>
+                            <p class="card-text"><small class="text-muted">{{ post.date_created }}</small></p>
+                        </div>
+                        <div class="row justify-content-end">
+                            <div class="col-3">
+                                <button style = "width:100%;height:100%;"><a href="{% url 'post' slug=post.slug %}" class = "no-decoration">Читать</a></button>
+                            </div>
+                            <div class="col-3 text-end">
+                                <div class="d-inline-block text-end">
+                                    <span class="icon-text">{{ post|get_likes }}</span>
+                                    <img class="like-icon" src="{% static 'images/like.png' %}" alt="Thumbs Up Icon">
+                                    <span class="icon-text">Likes</span>
+                                </div>
+                            </div>
+                            <div class="col-3 text-end">
+                                <div class="d-inline-block text-end">
+                                    <span class="icon-text">{{ post|get_dislikes }}</span>
+                                    <img class="like-icon" src="{% static 'images/dislike.png' %}" alt="Thumbs Up Icon">
+                                    <span class="icon-text">Dislikes</span>
+                                </div>
+                            </div>
+                            <div class="col-3 text-end">
+                                <div class="d-inline-block text-end">
+                                    <span class="icon-text">{{ post|get_comments }}</span>
+                                    <img class="like-icon" src="{% static 'images/comment.png' %}" alt="Thumbs Up Icon">
+                                    <span class="icon-text">Comments</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

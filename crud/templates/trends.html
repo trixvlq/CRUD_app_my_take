@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="col-md-10">
+    <h1>Trending</h1>
+    <div class="row">
+        <!-- Display trending posts here -->
+        {% for post in trending_posts %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title }}</h5>
+                        <p class="card-text">{{ post.description }}</p>
+                        <a href="{% url 'post_detail' post.slug %}" class="btn btn-primary">Read more</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
