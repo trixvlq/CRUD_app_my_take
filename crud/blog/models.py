@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Permission
 from django.db import models
 from django.utils.text import slugify
 
@@ -13,25 +13,29 @@ def to_slug(instance, word):
 
 
 class Friendship(models.Model):
-    first = models.ForeignKey("User", on_delete=models.CASCADE)
-    second = models.ForeignKey("User", on_delete=models.CASCADE)
+    first = models.ForeignKey("User", related_name='first_user', on_delete=models.CASCADE)
+    second = models.ForeignKey("User", related_name='second_user', on_delete=models.CASCADE)
 
 
 class FriendRequest(models.Model):
-    sending = models.ForeignKey("User", on_delete=models.CASCADE)
-    receiving = models.ForeignKey("User", on_delete=models.CASCADE)
+    sending = models.ForeignKey("User", related_name='sent_friend_requests', on_delete=models.CASCADE)
+    receiving = models.ForeignKey("User", related_name='received_friend_requests', on_delete=models.CASCADE)
 
 
 class User(AbstractUser):
-    pfp = models.ImageField(upload_to="media/photos/%Y/%m/%d/")
+    pfp = models.ImageField(upload_to="photos/%Y/%m/%d/")
     nickname = models.SlugField(unique=True, max_length=255)
-    friends = models.ManyToManyField("Friendship")
-    requests = models.ManyToManyField("FriendRequest")
+    friends = models.ManyToManyField("Friendship", related_name="users")
+    requests = models.ManyToManyField("FriendRequest", related_name="users")
     favorite = models.ManyToManyField("Post", through="PostUserConnection")
     online = models.BooleanField(default=True)
-    last_seen = models.DateTimeField(auto_now_add=True)
-    birthday = models.DateTimeField()
-
+    last_seen = models.DateTimeField(auto_now=True)
+    birthday = models.DateField()
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name='blogging_users',
+        blank=True
+    )
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = to_slug(self, self.username)
@@ -39,8 +43,8 @@ class User(AbstractUser):
 
 
 class PostUserConnection(models.Model):
-    user = models.ForeignKey('User')
-    post = models.ForeignKey('Post')
+    user = models.ForeignKey('User',on_delete=models.CASCADE)
+    post = models.ForeignKey('Post',on_delete=models.CASCADE)
     date_added = models.DateTimeField(auto_now_add=True)
 
 
@@ -105,9 +109,17 @@ class Dislike(Ike):
 
 class Comment(models.Model):
     text = models.TextField()
-    post = models.ForeignKey("Post", on_delete=models.CASCADE)
+    post = models.ForeignKey("Post", on_delete=models.CASCADE, blank=True, null=True)
+    upcomment = models.ForeignKey("Comment", on_delete=models.CASCADE, blank=True, null=True)
+    author = models.ForeignKey("User", on_delete=models.CASCADE)
 
 
 class Image(models.Model):
     image = models.ImageField(upload_to="media/photos/%Y/%m/%d/")
-    post = models.ForeignKey("Post")
+    post = models.ForeignKey("Post",on_delete=models.CASCADE)
+
+
+class Message(models.Model):
+    text = models.TextField()
+    author = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
