@@ -30,16 +30,12 @@ class User(AbstractUser):
     favorite = models.ManyToManyField("Post", through="PostUserConnection")
     online = models.BooleanField(default=True)
     last_seen = models.DateTimeField(auto_now=True)
-    birthday = models.DateField()
+    birthday = models.DateField(null=True,blank=True)
     user_permissions = models.ManyToManyField(
         Permission,
         related_name='blogging_users',
         blank=True
     )
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = to_slug(self, self.username)
-        super().save(*args, **kwargs)
 
 
 class PostUserConnection(models.Model):
