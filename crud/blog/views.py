@@ -7,6 +7,13 @@ def index(request):
         'posts':Posts
     }
     if not user.is_authenticated:
+        print('user is not authenticated')
         return render(request,'home.html',context)
     else:
-        return render(request,'base.html')
+        return render(request,'home.html',context)
+def post(request,slug):
+    post = Post.objects.get(slug=slug)
+    context = {
+        "post":post
+    }
+    return render(request,"post.html",context)

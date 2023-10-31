@@ -1,108 +1,68 @@
 {% extends "base.html" %}
+{% load humanize %}
+{% block greetings %}
+<div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary">
+    <div class="col-lg-6 px-0">
+        <div class="row">
+            <div class="col-md-9">
+                <h1 class="display-4 fst-italic">This is {{ post.author }}'s post</h1>
+                <p class="lead my-3">{{ post.author.bio }}</p>
+                <p class="lead mb-0"><a href="#" class="text-body-emphasis fw-bold">Read about {{ post.author }}</a></p>
+            </div>
+            <div class="col-md-3">
+                <img src="{{ post.author.pfp.url }}" style="width: 25vh; height: 100%;">
+            </div>
+        </div>
+    </div>
+</div>
 
+{% endblock %}
 {% block content %}
-  <div class="col md-9">
+<div class="col md-9">
     <div class="row">
-      <div class="col-md-8">
-        <div class="card">
-          <p class="card-text m-3"><small class="text-muted">Posted: {{ post.date_created }}</small></p>
-          <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
-          <div class="card-body">
-            <h5 class="card-title">{{ post.title }}</h5>
-            <p class="card-text">{{ post.content }}</p>
-            <p class="card-text"><small class="text-muted">Author: {{ post.author.username }}</small></p>
-            <p class="card-text"><small class="text-muted">Last Updated: {{ post.data_update }}</small></p>
-            <p class="card-text">Likes: {{ post.likes_count }} Dislikes: {{ post.dislikes_count }} Comments: {{ post.comments_count }}</p>
+        <div class="col">
+            <div class="card">
+                <p class="card-text m-3"><small class="text-muted">Posted: {{ post.date_created }}</small></p>
+                {% for image in post.images.all %}
+                <img src="{{ image.image.url }}" class="card-img-top" alt="{{ post.title }}">
+                {% endfor %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text">{{ post.content }}</p>
+                    <p class="card-text"><small class="text-muted">Author: {{ post.author.username }}</small></p>
+                    <p class="card-text"><small class="text-muted">Last Updated: {{ post.date_updated|naturaltime
+                        }}</small></p>
+                    <p class="card-text">Likes: {{ post.like_count }} Dislikes: {{ post.dislike_count }} Comments: {{
+                        post.comments_count }}</p>
 
-            <!-- Display categories associated with the post -->
-            <p class="card-text">Categories:
-              {% for category in post.category.all %}
-                <a href="#">{{ category.name }}</a>
-                {% if not forloop.last %}, {% endif %}
-              {% endfor %}
-            </p>
-          </div>
+                    <!-- Display categories associated with the post -->
+                    <p class="card-text">Categories:
+                        {% for category in post.category.all %}
+                        <a href="#">{{ category.name }}</a>
+                        {% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Comment Section -->
+            <div class="mt-4">
+                <h2>Comments</h2>
+                <ul class="list-group">
+                    {% for comment in comments %}
+                    <li class="list-group-item">
+                        <p><strong>{{ comment.author.username }}</strong> said:</p>
+                        <p>{{ comment.text }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <form method="post">
+                    {% csrf_token %}
+                    <textarea name="text" class="form-control" placeholder="Add your comment"></textarea>
+                    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+                </form>
+            </div>
         </div>
-
-        <!-- Comment Section -->
-        <div class="mt-4">
-          <h2>Comments</h2>
-          <ul class="list-group">
-            {% for comment in comments %}
-              <li class="list-group-item">
-                <p><strong>{{ comment.author.username }}</strong> said:</p>
-                <p>{{ comment.text }}</p>
-              </li>
-            {% endfor %}
-          </ul>
-          <form method="post" >
-            {% csrf_token %}
-            <textarea name="text" class="form-control" placeholder="Add your comment"></textarea>
-            <button type="submit" class="btn btn-primary mt-2">Submit</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- Sidebar with Tags -->
-      <div class="col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Tags</h5>
-            <!-- List categories and their post counts here -->
-            <ul class="list-group">
-              {% for category in post.category.all %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <a href="#">{{ category.name }}</a>
-                  <span class="badge bg-primary rounded-pill">{{ category.post_set.count }}</span>
-                </li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
-        <div class="position-sticky" style="top: 2rem;">
-          <div class="p-4 mb-3 bg-body-tertiary rounded">
-            <h4 class="fst-italic">About</h4>
-            <p class="mb-0">Customize this section to tell your visitors a little bit about your publication, writers, content, or something else entirely. Totally up to you.</p>
-          </div>
-
-          <div>
-            <h4 class="fst-italic">Recent posts</h4>
-            <ul class="list-unstyled">
-              {% for recent_post in recent_posts %}
-                <li>
-                  <a class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center py-3 link-body-emphasis text-decoration-none border-top" href="#">
-                    <img src="{{ recent_post.image.url }}" alt="{{ recent_post.title }}" width="96" height="96">
-                    <div class="col-lg-8">
-                      <h6 class="mb-0">{{ recent_post.title }}</h6>
-                      <small class="text-body-secondary">{{ recent_post.date_created }}</small>
-                    </div>
-                  </a>
-                </li>
-              {% endfor %}
-            </ul>
-          </div>
-
-          <div class="p-4">
-            <h4 class="fst-italic">Archives</h4>
-            <ol class="list-unstyled mb-0">
-              {% for archive in archives %}
-                <li><a href="#">{{ archive.month_year }}</a></li>
-              {% endfor %}
-            </ol>
-          </div>
-
-          <div class="p-4">
-            <h4 class="fst-italic">Elsewhere</h4>
-            <ol class="list-unstyled">
-              <li><a href="#">GitHub</a></li>
-              <li><a href="#">Twitter</a></li>
-              <li><a href="#">Facebook</a></li>
-            </ol>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
-    </div>
-  </div>
+</div>
 {% endblock %}
