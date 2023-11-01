@@ -1,6 +1,8 @@
 from django.contrib.sessions.models import Session
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.cache import cache
+
+from .forms import CommentForm
 from .models import *
 def index(request):
     user = request.user
@@ -16,6 +18,8 @@ def index(request):
 def post(request,slug):
     post = Post.objects.get(slug=slug)
     session_key = request.session.session_key
+    comments = Comment.objects.filter(post=post)
+    form = CommentForm()
     if session_key:
         view_count_key = f'post_view_count_{post.id}_{session_key}'
         view_count = cache.get(view_count_key)
@@ -34,6 +38,22 @@ def post(request,slug):
                 post.save()
     print(session_key)
     context = {
-        "post":post
+        "post":post,
+        "form":form,
+        "comments":comments
     }
     return render(request,"post.html",context)
+def comment(request,slug):
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = Post.objects.get(slug=slug)
+            if request.user.is_authenticated:
+                comment.author = request.user
+            else:
+                return redirect('post',slug=slug)
+            comment.save()
+            return redirect('home')
+        else:
+            return redirect('post',slug=slug)

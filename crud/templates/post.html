@@ -36,9 +36,8 @@
 
                     <!-- Display categories associated with the post -->
                     <p class="card-text">Categories:
-                        {% for category in post.category.all %}
-                        <a href="#">{{ category.name }}</a>
-                        {% if not forloop.last %}, {% endif %}
+                        {% for category in post.cats.all %}
+                        <a href="#">{{ category.title }}</a>
                         {% endfor %}
                     </p>
                 </div>
@@ -55,9 +54,9 @@
                     </li>
                     {% endfor %}
                 </ul>
-                <form method="post">
+                <form action="{% url 'comment' post.slug %}" method="post">
                     {% csrf_token %}
-                    <textarea name="text" class="form-control" placeholder="Add your comment"></textarea>
+                    {{ form.text }}
                     <button type="submit" class="btn btn-primary mt-2">Submit</button>
                 </form>
             </div>

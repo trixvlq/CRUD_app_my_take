@@ -33,6 +33,7 @@ class User(AbstractUser):
     online = models.BooleanField(default=True)
     last_seen = models.DateTimeField(auto_now=True)
     birthday = models.DateField(null=True, blank=True)
+    preferable_cars = models.ManyToManyField("Category")
     user_permissions = models.ManyToManyField(
         Permission,
         related_name='blogging_users',
