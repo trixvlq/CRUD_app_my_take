@@ -1,28 +1,85 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block post_recomended %}
-<div class="col p-4 d-flex flex-column position-static">
-    <strong class="d-inline-block mb-2 text-success-emphasis">Design</strong>
-    <h3 class="mb-0">Post title</h3>
-    <div class="mb-1 text-body-secondary">Nov 11</div>
-    <p class="mb-auto">This is a wider card with supporting text below as a natural lead-in to
-        additional content.</p>
-    <a href="#" class="icon-link gap-1 icon-link-hover stretched-link">
-        Continue reading
-        <svg class="bi">
-            <use xlink:href="#chevron-right"></use>
-        </svg>
-    </a>
-</div>
-{% endblock%}
-{% block content %}
-<div class="card mb-3">
-    <img src="..." class="card-img-top" alt="...">
-    <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content.
-            This content is a little bit longer.</p>
-        <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+{% load humanize %}
+{% block title %}Главная страница{% endblock %}
+{% block greetings %}
+<div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary">
+    <div class="col-lg-6 px-0">
+        <h1 class="display-4 fst-italic">This is my crud blog-alike app</h1>
+        <p class="lead my-3">It's developed via bootstrap,djagno and drf, i hope you like it :0</p>
+        <p class="lead mb-0"><a href="#" class="text-body-emphasis fw-bold">About me</a></p>
     </div>
 </div>
+{% endblock %}
+{% block post_recommended %}
+<div class="col-md-6">
+    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+        <div class="col p-4 d-flex flex-column position-static">
+            <strong class="d-inline-block mb-2 text-primary-emphasis">World</strong>
+            <h3 class="mb-0">Featured post</h3>
+            <div class="mb-1 text-body-secondary">Nov 12</div>
+            <p class="card-text mb-auto">This is a wider card with supporting text below as a natural lead-in to
+                additional content.</p>
+            <a href="#" class="icon-link gap-1 icon-link-hover stretched-link">
+                Continue reading
+                <svg class="bi">
+                    <use xlink:href="#chevron-right"></use>
+                </svg>
+            </a>
+        </div>
+        <div class="col-auto d-none d-lg-block">
+            <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
+                 role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice"
+                 focusable="false"><title>Placeholder</title>
+                <rect width="100%" height="100%" fill="#55595c"></rect>
+                <text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text>
+            </svg>
+        </div>
+    </div>
+</div>
+
+{% endblock%}
+{% block content %}
+{% for post in posts %}
+<div class="card mb-3">
+    {% for image in post.images.all %}
+    <img src="{{image.image.url}}" class="card-img-top" alt="...">
+    {% endfor %}
+    <div class="card-body">
+        <h5 class="card-title">{{post.title}}</h5>
+        <p class="card-text">{{ post.content|truncatechars:200}}</p>
+        <p class="card-text">
+            <small>{{ post.date_updated|naturaltime|title }}</small>
+            <span class="mx-5"></span>
+            <small>{{ post.views }} Views</small>
+            <span class="mx-3"></span>
+            <small>{{ post.like_count }} Likes</small>
+            <span class="mx-3"></span>
+            <small>{{ post.dislike_count }} Dislikes</small>
+            <span class="mx-5"></span>
+            <small>Created by {{ post.author }}</small>
+            <span class="mx-5"></span>
+            <a href="{{post.get_reverse_url}}">
+                <button type="button" class="btn btn-light btn-sm">Read</button>
+            </a>
+        </p>
+    </div>
+    <div class="card-footer">
+        <div class="row">
+            {% for category in post.cats.all %}
+            <div class="col-auto">
+                <p>{{category}}</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row">
+            {% for tag in post.tags.all %}
+            <div class="col-auto">
+                <p>{{tag}}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endfor %}
 {% endblock %}
