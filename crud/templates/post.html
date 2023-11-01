@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load humanize %}
+{% load static %}
 {% block greetings %}
 <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary">
     <div class="col-lg-6 px-0">
@@ -30,10 +31,8 @@
                     <h5 class="card-title">{{ post.title }}</h5>
                     <p class="card-text">{{ post.content }}</p>
                     <p class="card-text"><small class="text-muted">Author: {{ post.author.username }}</small></p>
-                    <p class="card-text"><small class="text-muted">Last Updated: {{ post.date_updated|naturaltime
-                        }}</small></p>
-                    <p class="card-text">Likes: {{ post.like_count }} Dislikes: {{ post.dislike_count }} Comments: {{
-                        post.comments_count }}</p>
+                    <p class="card-text"><small class="text-muted">Last Updated: {{ post.date_updated|naturaltime }}</small></p>
+                    <p class="card-text">Likes: {{ post.like_count }} Dislikes: {{ post.dislike_count }} Comments: {{ post.comments_count }}</p>
 
                     <!-- Display categories associated with the post -->
                     <p class="card-text">Categories:
