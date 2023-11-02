@@ -49,8 +49,7 @@
                 <ul class="list-group">
                     {% for comment in comments %}
                     <li class="list-group-item">
-                        <p><strong>{{ comment.author.username }}</strong> said:</p>
-                        <p>{{ comment.text }}</p>
+                        <p><strong>{{ comment.author.username }}</strong> said:{{ comment.text }}</p>
                     </li>
                     {% endfor %}
                 </ul>
