@@ -11,6 +11,8 @@ class AdminTag(admin.ModelAdmin):
     prepopulated_fields = {"slug": ('title',)}
 
 admin.site.register(User)
+admin.site.register(Dislike)
+admin.site.register(Like)
 admin.site.register(Post,AdminPost)
 admin.site.register(Category,AdminCat)
 admin.site.register(Tag,AdminTag)

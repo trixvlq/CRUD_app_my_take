@@ -63,10 +63,10 @@ class Post(models.Model):
         return self.title
 
     def like_count(self):
-        return Like.objects.filter(post=self).count()
+        return Like.objects.filter(post=self,is_active=True).count()
 
     def dislike_count(self):
-        return Dislike.objects.filter(post=self).count()
+        return Dislike.objects.filter(post=self,is_active=True).count()
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -110,7 +110,8 @@ class Category(models.Model):
 
 
 class Ike(models.Model):
-    post = models.ForeignKey("Post", on_delete=models.CASCADE)
+    post = models.ForeignKey("Post", on_delete=models.CASCADE, blank=True, null=True)
+    comment = models.ForeignKey("Comment",on_delete=models.CASCADE, blank=True, null=True)
     user = models.ForeignKey("User", on_delete=models.CASCADE)
     is_active = models.BooleanField(default=False)
 

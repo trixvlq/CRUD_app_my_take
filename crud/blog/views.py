@@ -1,4 +1,8 @@
+from typing import Union
+
 from django.contrib.sessions.models import Session
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.core.cache import cache
 
@@ -57,3 +61,58 @@ def comment(request,slug):
             return redirect('home')
         else:
             return redirect('post',slug=slug)
+def like(request,ident):
+    user = request.user
+    redirect_url = request.META.get('HTTP_REFERER', '/')
+    if isinstance(ident,int):
+        comment = Comment.objects.get(id=ident)
+        try:
+            like = Like.objects.get(comment=comment,user=user)
+            like.is_active = not like.is_active
+            like.save()
+        except ObjectDoesNotExist:
+            Like.objects.create(comment = comment,user=user,is_active=True)
+    elif isinstance(ident,str):
+        print("YEEEEAH BUDDY")
+        post = Post.objects.get(slug=ident)
+        try:
+            like = Like.objects.get(post=post, user=user)
+            like.is_active = not like.is_active
+            like.save()
+        except ObjectDoesNotExist:
+            Like.objects.create(post=post, user=user, is_active=True)
+        try:
+            dislike = Dislike.objects.get(post=post,user=user,is_active=True)
+            dislike.is_active = False
+            dislike.save()
+        except ObjectDoesNotExist:
+            pass
+    return HttpResponseRedirect(redirect_url)
+def dislike(request,ident):
+    user = request.user
+    redirect_url = request.META.get('HTTP_REFERER', '/')
+    if isinstance(ident,int):
+        comment = Comment.objects.get(id=ident)
+        try:
+            dislike = Dislike.objects.get(comment=comment,user=user)
+            dislike.is_active = not dislike.is_active
+            dislike.save()
+        except ObjectDoesNotExist:
+            Dislike.objects.create(comment = comment,user=user,is_active=True)
+    elif isinstance(ident,str):
+        print("YEEEEAH BUDDY")
+        post = Post.objects.get(slug=ident)
+        try:
+            dislike = Dislike.objects.get(post=post, user=user)
+            dislike.is_active = not dislike.is_active
+            print(dislike.is_active)
+            dislike.save()
+        except ObjectDoesNotExist:
+            Dislike.objects.create(post=post, user=user, is_active=True)
+        try:
+            like = Like.objects.get(post=post,user=user,is_active=True)
+            like.is_active = False
+            like.save()
+        except ObjectDoesNotExist:
+            pass
+    return HttpResponseRedirect(redirect_url)

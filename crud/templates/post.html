@@ -32,7 +32,7 @@
                     <p class="card-text">{{ post.content }}</p>
                     <p class="card-text"><small class="text-muted">Author: {{ post.author.username }}</small></p>
                     <p class="card-text"><small class="text-muted">Last Updated: {{ post.date_updated|naturaltime }}</small></p>
-                    <p class="card-text">Likes: {{ post.like_count }} Dislikes: {{ post.dislike_count }} Comments: {{ post.comments_count }}</p>
+                    <p class="card-text"><a href = "{% url 'like' post.slug %}"><img src = "{% static 'images/like.png' %}" style = "width:3vh"></a>{{ post.like_count }} <a href = "{% url 'dislike' post.slug %}"><img src = "{% static 'images/dislike.png' %}" style = "width:3vh"></a>{{ post.dislike_count }} <img src = "{% static 'images/comment.png' %}" style = "width:3vh"> {{ post.comments_count }}</p>
 
                     <!-- Display categories associated with the post -->
                     <p class="card-text">Categories:
@@ -49,7 +49,7 @@
                 <ul class="list-group">
                     {% for comment in comments %}
                     <li class="list-group-item">
-                        <p><strong>{{ comment.author.username }}</strong> said:{{ comment.text }}</p>
+                        <p><strong>{{ comment.author.username }}</strong>: {{ comment.text }}</p>
                     </li>
                     {% endfor %}
                 </ul>
